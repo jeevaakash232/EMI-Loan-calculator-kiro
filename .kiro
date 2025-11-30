@@ -1,0 +1,125 @@
+---
+inclusion: always
+---
+
+# Product Overview
+
+Loan EMI Calculator - A Java application for calculating Equated Monthly Installments (EMI) for loans with persistent calculation history.
+
+## Core Features
+
+- Calculate monthly EMI using standard loan formula: `EMI = [P x R x (1+R)^N] / [(1+R)^N-1]`
+- Store calculation history in SQLite database
+- Two interfaces: CLI console application and web server
+- View past calculations with complete details (principal, rate, tenure, EMI, total amount, interest, timestamp)
+
+## User Interfaces
+
+1. **Console Application** (`EMICalculatorApp`) - Interactive CLI menu for calculations and history viewing
+2. **Web Server** (`EMIWebServer`) - HTTP server on port 8080 with HTML UI and REST API endpoints
+
+## Currency
+
+All monetary values are displayed in Indian Rupees (₹)
+
+---
+inclusion: always
+---
+
+# Project Structure
+
+## Package Organization
+
+```
+com.emicalculator/
+├── EMICalculatorApp.java          # Main console application entry point
+├── model/
+│   └── EMICalculation.java        # POJO for EMI calculation data
+├── service/
+│   └── EMICalculatorService.java  # Business logic for EMI calculations
+├── database/
+│   └── DatabaseManager.java       # SQLite database operations
+└── web/
+    └── EMIWebServer.java          # HTTP server with handlers
+```
+
+## Architecture Pattern
+
+**Layered Architecture:**
+- **Presentation Layer**: Console UI (`EMICalculatorApp`) and Web UI (`EMIWebServer`)
+- **Service Layer**: Business logic (`EMICalculatorService`)
+- **Data Layer**: Database operations (`DatabaseManager`)
+- **Model Layer**: Data objects (`EMICalculation`)
+
+## Key Conventions
+
+### Code Style
+- Static service instances in application classes
+- Prepared statements for all database operations
+- Try-with-resources for auto-closing connections
+- Inline HTML/CSS in web server (no separate static files)
+
+### Naming
+- Package names: lowercase, singular (e.g., `model`, `service`, not `models`, `services`)
+- Classes: PascalCase with descriptive names
+- Constants: UPPER_SNAKE_CASE (e.g., `DB_URL`, `formatter`)
+- Database columns: snake_case (e.g., `rate_of_interest`, `calculated_at`)
+
+### Data Handling
+- Monetary values rounded to 2 decimal places
+- Timestamps use `LocalDateTime` with format: `yyyy-MM-dd HH:mm:ss`
+- Database stores timestamps as TEXT in ISO format
+
+### Web Server
+- Port: 8080 (hardcoded, IPv4 only)
+- Routes: `/`, `/calculate`, `/history`, `/api/calculate`, `/api/history`
+- API responses: JSON (manually constructed strings, no JSON library)
+- HTML embedded directly in Java strings
+
+
+---
+inclusion: always
+---
+
+# Technology Stack
+
+## Build System
+
+- **Maven** - Project management and build tool
+- Java 11 target/source compatibility
+- UTF-8 encoding
+
+## Dependencies
+
+- **SQLite JDBC** (3.42.0.0) - Database connectivity
+- **Java HttpServer** (com.sun.net.httpserver) - Built-in HTTP server for web interface
+
+## Common Commands
+
+### Build & Compile
+```bash
+mvn clean compile
+mvn clean package
+```
+
+### Run Applications
+```bash
+# Console application
+mvn exec:java -Dexec.mainClass="com.emicalculator.EMICalculatorApp"
+
+# Web server
+mvn exec:java -Dexec.mainClass="com.emicalculator.web.EMIWebServer"
+
+# Or use shell scripts
+./start.sh              # Console app
+./start_web_server.sh   # Web server
+```
+
+### Database
+
+- SQLite database file: `emi_calculator.db` (auto-created in project root)
+- Single table: `emi_history` with auto-increment ID
+
+## Java Version
+
+Requires Java 11 or higher
